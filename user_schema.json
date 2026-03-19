@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/users.schema.json",
+  "title": "Users Collection Schema",
+  "description": "JSON Schema for documents in the Firestore users collection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "birthday",
+    "created_time",
+    "display_name",
+    "email",
+    "favorite_color",
+    "photo_url",
+    "uid"
+  ],
+  "properties": {
+    "birthday": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Firestore timestamp represented as an RFC 3339 / ISO 8601 date-time string."
+    },
+    "created_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Firestore timestamp represented as an RFC 3339 / ISO 8601 date-time string."
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "favorite_color": {
+      "type": "string",
+      "minLength": 1
+    },
+    "photo_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9]+$",
+      "description": "Firebase Authentication user ID."
+    }
+  }
+}
