@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/components/add_task_widget.dart';
 import '/components/task_widget.dart';
@@ -7,6 +8,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'tasks_model.dart';
 export 'tasks_model.dart';
@@ -30,6 +32,34 @@ class _TasksWidgetState extends State<TasksWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => TasksModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.quoteCallResult = await QuoteCallCall.call();
+
+      if ((_model.quoteCallResult?.succeeded ?? true)) {
+        _model.quoteText = QuoteCallCall.apiQuoteText(
+          (_model.quoteCallResult?.jsonBody ?? ''),
+        )!;
+        _model.quoteAuthor = QuoteCallCall.apiQuoteAuthor(
+          (_model.quoteCallResult?.jsonBody ?? ''),
+        )!;
+        safeSetState(() {});
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error Retrieving Motivational Quote',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+            duration: Duration(milliseconds: 4000),
+            backgroundColor: Color(0xFFC70206),
+          ),
+        );
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -240,6 +270,37 @@ class _TasksWidgetState extends State<TasksWidget> {
                     );
                   },
                 ),
+              ),
+              Text(
+                _model.quoteText,
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(
+                        fontWeight: FontWeight.w500,
+                        fontStyle:
+                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                      ),
+                      fontSize: 16.0,
+                      letterSpacing: 0.0,
+                      fontWeight: FontWeight.w500,
+                      fontStyle:
+                          FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                    ),
+              ),
+              Text(
+                _model.quoteAuthor,
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(
+                        fontWeight:
+                            FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                        fontStyle:
+                            FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                      ),
+                      letterSpacing: 0.0,
+                      fontWeight:
+                          FlutterFlowTheme.of(context).bodyMedium.fontWeight,
+                      fontStyle:
+                          FlutterFlowTheme.of(context).bodyMedium.fontStyle,
+                    ),
               ),
             ].divide(SizedBox(height: 12.0)),
           ),
